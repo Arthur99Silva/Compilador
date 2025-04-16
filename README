@@ -1,0 +1,32 @@
+# Analisador Léxico em Java
+
+Este projeto implementa um analisador léxico em Java, que é a primeira etapa de um compilador. A ferramenta processa uma string contendo o código-fonte e gera uma lista de tokens, identificando elementos como palavras-chave, identificadores, números, literais de string, operadores e comentários.
+
+## Estrutura do Projeto
+
+- **Lexer.java**  
+  Implementa a classe responsável por ler o código fonte e realizar a tokenização. Contém métodos como `tokenize()`, `tokenizeIdentifierOrKeyword()`, `tokenizeNumber()`, `tokenizeString()`, dentre outros.
+
+- **Token.java**  
+  Define a classe `Token`, que armazena informações de cada token (tipo, lexema, linha e coluna).
+
+- **TokenType.java**  
+  Enumera os diferentes tipos de tokens que o analisador pode identificar (como KEYWORD, IDENTIFIER, NUMBER, OPERATOR, etc).
+
+- **Main.java**  
+  Contém o método `main` que demonstra o uso do analisador, instanciando a classe `Lexer` com um exemplo de código e imprimindo os tokens gerados.
+
+## Pré-requisitos
+
+- [Java JDK](https://www.oracle.com/java/technologies/javase-downloads.html) (versão 8 ou superior)
+- Terminal ou prompt de comando para compilar e executar o programa
+
+## Como Usar
+
+### 1. Clone o Repositório
+
+Clone este repositório para sua máquina com o comando:
+
+```bash
+git clone https://github.com/Arthur99Silva/Compilador.git
+cd Compilador
