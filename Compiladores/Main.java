@@ -33,7 +33,7 @@ public class Main {
                            "    return 0;\n" +
                            "}";
 
-        String codeToTest = validCode; // Mude para codeWithUnknownEnd para testar o erro
+        String codeToTest = validCode;
         System.out.println("Código Fonte para Análise:\n" + codeToTest + "\n");
 
         Lexer lexer = new Lexer(codeToTest);
