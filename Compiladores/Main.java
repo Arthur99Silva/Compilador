@@ -50,8 +50,6 @@ public class Main {
             parser.parseProgram();
         } catch (RuntimeException e) {
             System.err.println("Falha na Análise: " + e.getMessage());
-            // Para depuração mais detalhada, descomente a linha abaixo:
-            // e.printStackTrace();
         }
     }
 }

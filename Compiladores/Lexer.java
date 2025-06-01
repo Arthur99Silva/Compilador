@@ -19,7 +19,7 @@ public class Lexer {
         this.column = 1;
     }
 
-    // Método principal que gera a lista de tokens
+    // Metodo principal que gera a lista de tokens
     public List<Token> tokenize() {
         List<Token> tokens = new ArrayList<>();
 
@@ -32,25 +32,25 @@ public class Lexer {
                 continue;
             }
 
-            // Identificadores ou palavras-chave: começam com letra ou sublinhado
+            // Identificadores ou palavras-chave
             if (Character.isLetter(current) || current == '_') {
                 tokens.add(tokenizeIdentifierOrKeyword());
                 continue;
             }
 
-            // Números: dígitos
+            // Números
             if (Character.isDigit(current)) {
                 tokens.add(tokenizeNumber());
                 continue;
             }
 
-            // Literais de string: iniciam e terminam com aspas duplas
+            // Literais de string
             if (current == '\"') {
                 tokens.add(tokenizeString());
                 continue;
             }
 
-            // Comentários: verificação para comentário de linha ou multi-linha
+            // Comentários
             if (current == '/') {
                 if (peekNext() == '/') {
                     tokens.add(tokenizeSingleLineComment());
@@ -68,7 +68,7 @@ public class Lexer {
         return tokens;
     }
 
-    // Retorna o caractere atual sem avançar a posição
+    // Retorna o caractere atual sem avançar a posicao
     private char peek() {
         return input.charAt(pos);
     }
@@ -123,21 +123,18 @@ public class Lexer {
         return false;
     }
 
-    // Token para números
+    // Token para numeros
     private Token tokenizeNumber() {
         int startPos = pos;
         int startCol = column;
         boolean hasDot = false;
         while (pos < input.length() && (Character.isDigit(peek()) || (!hasDot && peek() == '.'))) {
             if (peek() == '.') {
-                 // Certifica-se de que o ponto é seguido por um dígito para ser um decimal
-                 // e que não seja o último caractere da entrada.
+
                 if (pos + 1 < input.length() && Character.isDigit(peekNext())) {
                     hasDot = true;
                 } else {
-                    // Se o ponto não for seguido por um dígito, ele não faz parte deste número.
-                    // Pode ser um operador de acesso a membro ou um erro, dependendo da linguagem.
-                    // Para este lexer, paramos de consumir o número aqui.
+
                     break;
                 }
             }
@@ -149,72 +146,67 @@ public class Lexer {
 
     // Token para literais de string
     private Token tokenizeString() {
-        int startLine = line; // Guarda a linha inicial caso a string se estenda por múltiplas linhas
+        int startLine = line;
         int startCol = column;
         StringBuilder sb = new StringBuilder();
-        advance(); // ignora a aspa de abertura
+        advance();
         while (pos < input.length() && peek() != '\"') {
             char currentChar = advance();
-            if (currentChar == '\\') { // Trata caracteres de escape simples
+            if (currentChar == '\\') {
                 if (pos < input.length()) {
-                    char escapedChar = advance(); // Consome o caractere após a barra invertida
+                    char escapedChar = advance();
                     switch (escapedChar) {
                         case 'n': sb.append('\n'); break;
                         case 't': sb.append('\t'); break;
                         case '\"': sb.append('\"'); break;
                         case '\\': sb.append('\\'); break;
-                        // Adicionar outros escapes se necessário
                         default:
-                            sb.append('\\').append(escapedChar); // Mantém a sequência de escape não reconhecida
+                            sb.append('\\').append(escapedChar); 
                             break;
                     }
                 } else {
-                    sb.append('\\'); // Barra invertida no final da string (pode ser erro)
+                    sb.append('\\');
                 }
             } else {
                 sb.append(currentChar);
             }
         }
         if (pos < input.length() && peek() == '\"') {
-            advance(); // ignora a aspa de fechamento
+            advance(); 
         } else {
-            // String não terminada - poderia lançar um erro ou criar um token de erro.
-            // System.err.println("Warning: Unterminated string literal at line " + startLine + ", col " + startCol);
         }
         return new Token(TokenType.STRING_LITERAL, sb.toString(), startLine, startCol);
     }
 
-    // Token para comentários de linha (// comentário)
+    // Token para comentários de linha
     private Token tokenizeSingleLineComment() {
         int startCol = column;
         StringBuilder sb = new StringBuilder();
-        advance(); // consome '/'
-        advance(); // consome segundo '/'
+        advance(); 
+        advance();
         while (pos < input.length() && peek() != '\n') {
             sb.append(advance());
         }
-        // Não avança sobre o '\n' aqui, para que a contagem de linhas seja tratada corretamente por advance()
         return new Token(TokenType.COMMENT, sb.toString().trim(), line, startCol);
     }
 
-    // Token para comentários multi-linha (/* comentário */)
+    // Token para comentários multi-linha
     private Token tokenizeMultiLineComment() {
-        int startLine = line; // Guarda a linha inicial do comentário
+        int startLine = line; 
         int startCol = column;
         StringBuilder sb = new StringBuilder();
-        advance(); // consome '/'
-        advance(); // consome '*'
+        advance();
+        advance();
         while (pos < input.length()) {
             if (peek() == '*' && peekNext() == '/') {
-                advance(); // consome '*'
-                advance(); // consome '/'
+                advance();
+                advance();
                 return new Token(TokenType.COMMENT, sb.toString().trim(), startLine, startCol);
             }
             sb.append(advance());
         }
-        // Comentário multilinha não terminado - poderia lançar um erro.
-        // System.err.println("Warning: Unterminated multi-line comment starting at line " + startLine + ", col " + startCol);
-        return new Token(TokenType.COMMENT, sb.toString().trim(), startLine, startCol); // Ou TokenType.UNKNOWN
+
+        return new Token(TokenType.COMMENT, sb.toString().trim(), startLine, startCol); //TokenType.UNKNOWN
     }
 
     // Tokeniza operadores, separadores ou marca como UNKNOWN
@@ -225,7 +217,6 @@ public class Lexer {
         String lexeme;
         TokenType type;
 
-        // Verifica operadores de múltiplos caracteres primeiro
         if (pos + 1 < input.length()) {
             String twoCharOp = input.substring(pos, pos + 2);
             switch (twoCharOp) {
@@ -233,17 +224,15 @@ public class Lexer {
                 case "!=":
                 case "<=":
                 case ">=":
-                // Adicione outros operadores de múltiplos caracteres como "&&", "||" se necessário
-                    advance(); // consome o primeiro char
-                    advance(); // consome o segundo char
+                    advance();
+                    advance();
                     lexeme = twoCharOp;
                     type = TokenType.OPERATOR;
                     return new Token(type, lexeme, line, startCol);
             }
         }
 
-        // Operadores ou separadores de um único caractere
-        advance(); // Consome o caractere
+        advance();
         lexeme = String.valueOf(current);
 
         switch (current) {
@@ -255,10 +244,10 @@ public class Lexer {
             case '=':
             case '<':
             case '>':
-            case '!': // (ex: NOT lógico)
-            case '&': // (ex: AND bit-a-bit, endereço-de)
-            case '|': // (ex: OR bit-a-bit)
-            case '^': // (ex: XOR bit-a-bit)
+            case '!':
+            case '&':
+            case '|':
+            case '^': 
                 type = TokenType.OPERATOR;
                 break;
             case '(':

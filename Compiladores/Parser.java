@@ -9,7 +9,6 @@ public class Parser {
 
     public Parser(List<Token> rawTokens) {
         this.tokens = new ArrayList<>();
-        // Filtra WHITESPACE e COMMENT, e alerta sobre UNKNOWN
         for (Token token : rawTokens) {
             if (token.getType() != TokenType.WHITESPACE && token.getType() != TokenType.COMMENT) { //
                 if (token.getType() == TokenType.UNKNOWN) { //
@@ -24,7 +23,7 @@ public class Parser {
         this.currentToken = this.tokens.isEmpty() ? null : this.tokens.get(0);
 
         if (this.currentToken == null && !rawTokens.isEmpty() && this.tokens.isEmpty()) {
-            // System.out.println("Analisando um programa vazio (todos os tokens eram espaço em branco ou comentários).");
+            System.out.println("Analisando um programa vazio (todos os tokens eram espaço em branco ou comentários).");
         }
     }
 
@@ -150,7 +149,6 @@ public class Parser {
         expect(TokenType.SEPARATOR, "}"); //
     }
 
-    // --- MÉTODO parseStatement MODIFICADO ---
     private void parseStatement() {
         if (currentToken == null) {
             throw new RuntimeException("Erro de Sintaxe: Fim inesperado da entrada, esperada uma instrução.");
@@ -164,19 +162,15 @@ public class Parser {
         } else if (currentToken.getType() == TokenType.KEYWORD && currentToken.getLexeme().equals("return")) { //
             parseReturnStatement();
         } else if (currentToken.getType() == TokenType.IDENTIFIER) { //
-            // Lookahead para distinguir entre atribuição (x = ...) e chamada de função/expressão (func(...))
-            // Token idToken = currentToken; // Não precisamos guardar o idToken aqui se não formos usá-lo diretamente
             Token nextToken = (currentTokenIndex + 1 < tokens.size()) ? tokens.get(currentTokenIndex + 1) : null;
 
             if (nextToken != null && nextToken.getType() == TokenType.OPERATOR && nextToken.getLexeme().equals("=")) { //
-                // É uma instrução de atribuição: IDENTIFIER = expression;
-                expect(TokenType.IDENTIFIER); // Consome o IDENTIFIER //
-                expect(TokenType.OPERATOR, "="); // Consome o '=' //
-                parseExpression(); // Analisa a expressão à direita
+                expect(TokenType.IDENTIFIER);
+                expect(TokenType.OPERATOR, "=");
+                parseExpression();
                 expect(TokenType.SEPARATOR, ";"); //
             } else {
-                // Caso contrário, assume-se que seja uma chamada de função ou uma expressão simples
-                // que termina em ';'
+
                 parseExpressionStatement();
             }
         } else if (currentToken.getType() == TokenType.SEPARATOR && currentToken.getLexeme().equals("{")) { //
@@ -190,7 +184,7 @@ public class Parser {
 
     private void parseDeclarationStatement() {
         parseTypeSpecifier();
-        expect(TokenType.IDENTIFIER); // Nome da Variável //
+        expect(TokenType.IDENTIFIER);
         if (currentToken != null && currentToken.getType() == TokenType.OPERATOR && currentToken.getLexeme().equals("=")) { //
             expect(TokenType.OPERATOR, "="); //
             parseExpression();
@@ -211,7 +205,6 @@ public class Parser {
         expect(TokenType.SEPARATOR, ";"); //
     }
 
-    // --- NOVO MÉTODO parseTerm ---
     private void parseTerm() {
         if (currentToken == null) {
             throw new RuntimeException("Erro de Sintaxe: Fim inesperado da entrada, esperado um termo na expressão.");
@@ -220,37 +213,33 @@ public class Parser {
             throw new RuntimeException("Erro de Sintaxe: Token DESCONHECIDO encontrado onde um termo era esperado: " + currentToken);
         }
 
-        if (currentToken.getType() == TokenType.IDENTIFIER) { //
-            // Token idToken = currentToken; // Não precisamos guardar, apenas consumir ou verificar próximo
-            advance(); // Consome o IDENTIFIER
+        if (currentToken.getType() == TokenType.IDENTIFIER) { 
+            advance();
 
-            // Verifica se é uma chamada de função: IDENTIFIER ( argumentos )
             if (currentToken != null && currentToken.getType() == TokenType.SEPARATOR && currentToken.getLexeme().equals("(")) { //
-                expect(TokenType.SEPARATOR, "("); // Consome '(' //
+                expect(TokenType.SEPARATOR, "(");
                 if (currentToken != null && !(currentToken.getType() == TokenType.SEPARATOR && currentToken.getLexeme().equals(")"))) { //
                     parseArgumentList(); 
                 }
-                expect(TokenType.SEPARATOR, ")"); // Consome ')' //
+                expect(TokenType.SEPARATOR, ")");
             }
-            // Se não for uma chamada de função, o IDENTIFIER já foi consumido e atua como um termo.
         } else if (currentToken.getType() == TokenType.NUMBER) { //
             expect(TokenType.NUMBER); //
         } else if (currentToken.getType() == TokenType.STRING_LITERAL) { //
             expect(TokenType.STRING_LITERAL); //
         }
-        // Para suportar expressões parentesizadas (ex: (5 + 10) * 2):
-        // else if (currentToken.getType() == TokenType.SEPARATOR && currentToken.getLexeme().equals("(")) {
-        //    expect(TokenType.SEPARATOR, "(");
-        //    parseExpression(); // Analisa a expressão dentro dos parênteses
-        //    expect(TokenType.SEPARATOR, ")");
-        // }
+        // Expressões parentesizadas (ex: (5 + 10) * 2):
+        else if (currentToken.getType() == TokenType.SEPARATOR && currentToken.getLexeme().equals("(")) {
+            expect(TokenType.SEPARATOR, "(");
+            parseExpression();
+            expect(TokenType.SEPARATOR, ")");
+        }
         else {
             throw new RuntimeException("Erro de Sintaxe: Token inesperado no termo da expressão: " + currentToken +
                                        ". Esperado IDENTIFICADOR, NÚMERO, LITERAL_STRING ou '(' para expressão parentesizada.");
         }
     }
 
-    // --- MÉTODO parseExpression MODIFICADO ---
     private void parseExpression() {
         if (currentToken == null) {
             throw new RuntimeException("Erro de Sintaxe: Fim inesperado da entrada, esperada uma expressão.");
@@ -259,29 +248,25 @@ public class Parser {
             throw new RuntimeException("Erro de Sintaxe: Token DESCONHECIDO encontrado na expressão: " + currentToken);
         }
 
-        parseTerm(); // Analisa o primeiro termo
+        parseTerm();
 
-        // Loop para operadores binários simples (sem precedência complexa ou associatividade)
         while (currentToken != null && currentToken.getType() == TokenType.OPERATOR) { //
             String lexeme = currentToken.getLexeme(); //
-            // Suporta apenas alguns operadores aritméticos básicos por enquanto
             if (lexeme.equals("+") || lexeme.equals("-") || lexeme.equals("*") || lexeme.equals("/")) {
-                advance(); // Consome o operador
-                parseTerm(); // Analisa o próximo termo
+                advance();
+                parseTerm();
             } else {
-                // Se não for um dos operadores aritméticos esperados para continuar a expressão, interrompe.
-                // Outros operadores como '=', '<', '==' seriam tratados por regras de nível superior
-                // ou por uma gramática de expressão mais elaborada.
+
                 break;
             }
         }
     }
 
     private void parseArgumentList() {
-        parseExpression(); // Primeiro argumento
+        parseExpression();
         while (currentToken != null && currentToken.getType() == TokenType.SEPARATOR && currentToken.getLexeme().equals(",")) { //
             expect(TokenType.SEPARATOR, ","); //
-            parseExpression(); // Próximos argumentos
+            parseExpression();
         }
     }
 }

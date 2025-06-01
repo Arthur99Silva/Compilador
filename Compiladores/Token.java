@@ -1,4 +1,4 @@
-// File: Compiladores/Token.java
+
 public class Token {
     private TokenType type;
     private String lexeme;
