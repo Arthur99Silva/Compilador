@@ -1,32 +1,73 @@
-# Analisador Léxico em Java
+# Compilador Simples em Java: Analisador Léxico e Sintático
 
-Este projeto implementa um analisador léxico em Java, que é a primeira etapa de um compilador. A ferramenta processa uma string contendo o código-fonte e gera uma lista de tokens, identificando elementos como palavras-chave, identificadores, números, literais de string, operadores e comentários.
+Este projeto implementa as duas primeiras fases de um compilador para uma linguagem procedural simples, inspirada em C. Desenvolvido em Java, ele inclui:
+
+1.  Um **Analisador Léxico (Lexer)** que processa o código-fonte e o divide em uma sequência de tokens.
+2.  Um **Analisador Sintático (Parser)** que utiliza esses tokens para verificar se o código segue a gramática da linguagem.
 
 ## Estrutura do Projeto
 
-- **Lexer.java**  
-  Implementa a classe responsável por ler o código fonte e realizar a tokenização. Contém métodos como `tokenize()`, `tokenizeIdentifierOrKeyword()`, `tokenizeNumber()`, `tokenizeString()`, dentre outros.
+O projeto está organizado da seguinte forma:
 
-- **Token.java**  
-  Define a classe `Token`, que armazena informações de cada token (tipo, lexema, linha e coluna).
+* **`Compiladores/Lexer.java`**:
+    Implementa a classe responsável por ler o código fonte e realizar a tokenização. Contém métodos como `tokenize()`, `tokenizeIdentifierOrKeyword()`, `tokenizeNumber()`, `tokenizeString()`, e `tokenizeOperatorSeparatorOrUnknown()` para identificar os diferentes componentes léxicos.
 
-- **TokenType.java**  
-  Enumera os diferentes tipos de tokens que o analisador pode identificar (como KEYWORD, IDENTIFIER, NUMBER, OPERATOR, etc).
+* **`Compiladores/Parser.java`**:
+    Implementa a classe do analisador sintático usando a técnica de descida recursiva. É responsável por verificar a estrutura gramatical do código a partir dos tokens fornecidos pelo Lexer. Contém métodos como `parseProgram()`, `parseFunctionDefinition()`, `parseStatement()`, `parseExpression()`, entre outros.
 
-- **Main.java**  
-  Contém o método `main` que demonstra o uso do analisador, instanciando a classe `Lexer` com um exemplo de código e imprimindo os tokens gerados.
+* **`Compiladores/Token.java`**:
+    Define a classe `Token`, que armazena informações detalhadas sobre cada token identificado pelo Lexer (tipo, lexema, número da linha e da coluna).
+
+* **`Compiladores/TokenType.java`**:
+    Enumera os diferentes tipos de tokens que o analisador léxico pode identificar, como `KEYWORD`, `IDENTIFIER`, `NUMBER`, `OPERATOR`, `SEPARATOR`, `STRING_LITERAL`, `COMMENT`, `WHITESPACE`, e `UNKNOWN`.
+
+* **`Compiladores/Main.java`**:
+    Contém o método `main` que serve como ponto de entrada para demonstrar o uso do analisador léxico e sintático. Ele instancia as classes `Lexer` e `Parser` com um código de exemplo, imprime os tokens gerados e o resultado da análise sintática.
+
+## Funcionalidades
+
+### Analisador Léxico (`Lexer.java`)
+
+* **Tokenização**: Converte uma string de código-fonte em uma lista de `Token`s.
+* **Identificação de Tokens**: Reconhece:
+    * **Palavras-chave**: `int`, `float`, `void`, `return`, etc.
+    * **Identificadores**: Nomes de variáveis e funções.
+    * **Números**: Inteiros e decimais simples.
+    * **Literais de String**: Sequências de caracteres entre aspas duplas, com suporte básico a escape.
+    * **Operadores**: Aritméticos (`+`, `-`, `*`, `/`), de atribuição (`=`), e relacionais/lógicos simples (`==`, `!=`, `<`, `>`).
+    * **Separadores**: Parênteses `()`, chaves `{}`, ponto e vírgula `;`, vírgula `,`.
+    * **Comentários**: De linha (`//...`) e multi-linha (`/*...*/`).
+    * **Espaços em Branco**: Ignorados na fase de parsing (filtrados).
+    * **Tokens Desconhecidos**: Caracteres ou sequências não reconhecidas.
+
+### Analisador Sintático (`Parser.java`)
+
+* **Validação Gramatical**: Verifica se a sequência de tokens forma uma estrutura válida de acordo com a gramática da linguagem de exemplo.
+* **Técnica de Descida Recursiva**: Utiliza um conjunto de métodos mutuamente recursivos para analisar as diferentes construções da linguagem.
+* **Construções Suportadas**:
+    * Definições de Múltiplas Funções.
+    * Parâmetros de Função.
+    * Declarações de Variáveis Locais com inicialização opcional (ex: `int x = 10;`, `float y = a + 5;`).
+    * Instruções de Atribuição (ex: `x = y;`).
+    * Instruções de Retorno (com ou sem valor).
+    * Chamadas de Função como instruções (ex: `myFunc();`).
+    * Blocos de código aninhados (`{...}`).
+    * Expressões Aritméticas Simples (ex: `a + b`, `5 * 10`). *Nota: A implementação atual trata operadores aritméticos com a mesma precedência, da esquerda para a direita.*
+* **Tratamento de Erros**: Reporta o primeiro erro de sintaxe encontrado, indicando o token inesperado e o que era esperado.
+* **Filtragem de Tokens**: Ignora tokens de `WHITESPACE` e `COMMENT` antes de iniciar a análise.
 
 ## Pré-requisitos
 
-- [Java JDK](https://www.oracle.com/java/technologies/javase-downloads.html) (versão 8 ou superior)
-- Terminal ou prompt de comando para compilar e executar o programa
+* [Java JDK](https://www.oracle.com/java/technologies/javase-downloads.html) (versão 8 ou superior recomendado).
+* Um terminal ou prompt de comando para compilação e execução.
+* Opcional: Git para clonar o repositório.
 
 ## Como Usar
 
-### 1. Clone o Repositório
+### 1. Obtenha o Código
+   Você pode clonar o repositório (se estiver em um) ou simplesmente criar os arquivos (`Lexer.java`, `Parser.java`, `Token.java`, `TokenType.java`, `Main.java`) em um diretório no seu computador.
 
-Clone este repositório para sua máquina com o comando:
-
-```bash
-git clone https://github.com/Arthur99Silva/Compilador.git
-cd Compilador
+   Se estiver usando Git:
+   ```bash
+   git clone [https://github.com/SEU_USUARIO_GITHUB/NOME_DO_SEU_REPOSITORIO.git](https://github.com/SEU_USUARIO_GITHUB/NOME_DO_SEU_REPOSITORIO.git)
+   cd NOME_DO_SEU_REPOSITORIO/Compiladores
