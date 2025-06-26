@@ -1,0 +1,6 @@
+// Exemplo de código em C para o arquivo codigo.txt
+int main() {
+    int x = 10;
+    float y = 20.5;
+    return 0;
+}
