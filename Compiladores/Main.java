@@ -6,11 +6,10 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        String filePath = "/home/arthurantunes/Compilador/Compiladores/codigo.txt"; // Nome do arquivo a ser lido
+        String filePath = "Compiladores/codigo.txt"; // Caminho relativo para o arquivo de código
         String codeToTest = "";
 
         try {
-            // Lê todo o conteúdo do arquivo para a string
             codeToTest = new String(Files.readAllBytes(Paths.get(filePath)));
         } catch (IOException e) {
             System.err.println("Erro ao ler o arquivo: " + filePath);
@@ -27,9 +26,10 @@ public class Main {
         for (Token token : tokens) {
             System.out.println(token);
         }
-        System.out.println("\n--- Saída do Parser ---");
+        System.out.println("\n--- Saída do Parser (Análise Sintática e Semântica) ---");
 
         try {
+            // Agora o Parser tem a lógica semântica embutida
             Parser parser = new Parser(tokens);
             parser.parseProgram();
         } catch (RuntimeException e) {
