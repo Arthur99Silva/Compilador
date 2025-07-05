@@ -6,7 +6,7 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        String filePath = "Compiladores/codigo.txt"; // Caminho relativo para o arquivo de código
+        String filePath = "Compiladores/codigo.txt";
         String codeToTest = "";
 
         try {
@@ -29,11 +29,16 @@ public class Main {
         System.out.println("\n--- Saída do Parser (Análise Sintática e Semântica) ---");
 
         try {
-            // Agora o Parser tem a lógica semântica embutida
-            Parser parser = new Parser(tokens);
+            CodeGenerator codeGenerator = new CodeGenerator();
+            Parser parser = new Parser(tokens, codeGenerator);
             parser.parseProgram();
+            
+            System.out.println("\n--- Código Gerado (em C) ---");
+            System.out.println(codeGenerator.getGeneratedCode());
+
         } catch (RuntimeException e) {
-            System.err.println("Falha na Análise: " + e.getMessage());
+            // Imprime a pilha de erros para facilitar a depuração
+            e.printStackTrace();
         }
     }
 }

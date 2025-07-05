@@ -1,6 +1,17 @@
-// Exemplo de código em C para o arquivo codigo.txt
+int valor_global;
+
+void inicializa() {
+    valor_global = 10;
+}
+
+int calcula(int x) {
+    int resultado;
+    resultado = (valor_global * x) + 2;
+    return resultado;
+}
+
 int main() {
-    int x = 10;
-    float y = 20.5;
+    inicializa();
+    int final = calcula(5);
     return 0;
 }
